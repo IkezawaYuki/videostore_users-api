@@ -6,23 +6,30 @@ import (
 	"github.com/IkezawaYuki/videostore_users-api/utils/errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 // GetUser ユーザーの取得
 func GetUser(c *gin.Context) {
+	userID, userErr := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if userErr != nil{
+		err := errors.NewBadRequestErr("user number should be number")
+		c.JSON(err.Status, err)
+	}
 
-	c.String(http.StatusNotImplemented, "implement GetUser()!\n")
+	user, getErr := services.GetUser(userID)
+	if getErr != nil{
+		c.JSON(getErr.Status, getErr)
+		return
+	}
+	c.JSON(http.StatusOK, user)
 }
 
 // CreateUser ユーザーの登録
 func CreateUser(c *gin.Context) {
 	var user users.User
 	if err := c.ShouldBindJSON(&user); err != nil {
-		restErr := errors.RestErr{
-			Message: "Invalid json body",
-			Status:   http.StatusBadRequest,
-			Error:   "bad_request",
-		}
+		restErr := errors.NewBadRequestErr("Invalid json body")
 		c.JSON(restErr.Status, restErr)
 		return
 	}
@@ -33,10 +40,10 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusNotImplemented, result)
+	c.JSON(http.StatusOK, result)
 }
 
-//// FindUser ユーザーの検索
-////func FindUser(c *gin.Context){
+// FindUser ユーザーの検索
+//func FindUser(c *gin.Context){
 ////	c.String(http.StatusNotImplemented, "implement me!")
 ////}

@@ -13,6 +13,6 @@ func mapUrls(){
 	router.POST("/users", users.CreateUser)
 
 	// 管理者ユーザー関連
-	router.GET("/users/admin/:user_id", users.GetAdminUser)
-	router.POST("/users/admin", users.CreateAdminUser)
+	router.GET("/admin/users/:user_id", users.GetAdminUser)
+	router.POST("/admin/users", users.CreateAdminUser)
 }

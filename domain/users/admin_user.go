@@ -5,9 +5,10 @@ import (
 	"strings"
 )
 
-// User 一般ユーザーのEntity
-type User struct {
+// 管理者ユーザーのEntity UserIDを外部キーに持つ。
+type AdminUser struct {
 	ID          int64  `json:"id"`
+	UserID      int64  `json:"admin_id"`
 	FirstName   string `json:"first_name"`
 	LastName    string `json:"last_name"`
 	NickName    string `json:"nick_name"`
@@ -16,18 +17,13 @@ type User struct {
 	DateCreated string `json:"date_created"`
 }
 
-func (user *User) Validate() *errors.RestErr {
-	user.Email = strings.TrimSpace(strings.ToLower(user.Email))
-	if user.Email == "" {
+func (adminUser *AdminUser) Validate() *errors.RestErr{
+	adminUser.Email = strings.TrimSpace(strings.ToLower(adminUser.Email))
+	if adminUser.Email == "" {
 		return errors.NewBadRequestErr("Invalid email address")
 	}
-
-	if user.NickName == ""{
-		return errors.NewBadRequestErr("Invalid nickname")
-	}
-
-	if user.Age > 0{
-		return errors.NewBadRequestErr("Invalid age")
+	if adminUser.UserID > 0{
+		return errors.NewBadRequestErr("Invalid user id")
 	}
 
 	return nil
