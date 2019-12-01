@@ -5,18 +5,17 @@ import (
 	"github.com/IkezawaYuki/videostore_users-api/utils/errors"
 )
 
-
-// GetUser ユーザーの取得
-func GetUser(userID int64)(*users.User, *errors.RestErr){
-	result := &users.User{ID: userID}
+// GetAdminUser 管理者ユーザーの取得
+func GetAdminUser(adminID int64)(*users.User, *errors.RestErr){
+	result := &users.User{ID: adminID}
 	if err := result.Get(); err != nil{
 		return nil, err
 	}
 	return result, nil
 }
 
-// CreateUser ユーザーの新規追加
-func CreateUser(user users.User)(*users.User, *errors.RestErr){
+// CreateAdminUser 管理者ユーザーの新規追加
+func CreateAdminUser(user users.AdminUser)(*users.AdminUser, *errors.RestErr){
 	if err := user.Validate(); err != nil{
 		return nil, err
 	}
@@ -25,4 +24,3 @@ func CreateUser(user users.User)(*users.User, *errors.RestErr){
 	}
 	return &user, nil
 }
-

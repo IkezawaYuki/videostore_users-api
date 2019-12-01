@@ -2,7 +2,13 @@ package users
 
 import (
 	"fmt"
+	"github.com/IkezawaYuki/videostore_users-api/datasources/mysql/users_db"
+	"github.com/IkezawaYuki/videostore_users-api/utils/date_utils"
 	"github.com/IkezawaYuki/videostore_users-api/utils/errors"
+)
+
+const (
+	queryInsertUser = "INSERT INTO users(first_name, last_name, nickname, email, age, date_created) VALUES(?,?,?,?,?,?)"
 )
 var (
 	userDB = make(map[int64]*User)
@@ -10,6 +16,7 @@ var (
 
 func (user *User) Get() *errors.RestErr{
 	result := userDB[user.ID]
+
 	if result == nil{
 		return errors.NewNotFoundErr(fmt.Sprintf("user_id %d is not found", user.ID))
 	}
@@ -23,13 +30,24 @@ func (user *User) Get() *errors.RestErr{
 }
 
 func (user *User) Save()*errors.RestErr{
-	current := userDB[user.ID]
-	if current != nil{
-		if current.Email == user.Email{
-			return errors.NewBadRequestErr(fmt.Sprintf("email %s is already registered", user.Email))
-		}
-		return errors.NewBadRequestErr(fmt.Sprintf("user_id %d is already exists", user.ID))
+	stmt, err := users_db.Client.Prepare(queryInsertUser)
+	if err != nil{
+		return errors.NewInternalServerErr(err.Error())
 	}
-	userDB[user.ID] = user
+	defer stmt.Close()
+
+	user.DateCreated = date_utils.GetNowString()
+	insertResult, err := stmt.Exec(user.FirstName, user.LastName, user.NickName, user.Email, user.Age, user.DateCreated)
+	if err != nil{
+		return errors.NewInternalServerErr(
+			fmt.Sprintf("error when trying to save user %s", err.Error()))
+	}
+
+	userID, err := insertResult.LastInsertId()
+	if err != nil{
+		return errors.NewInternalServerErr(
+			fmt.Sprintf("error when trying to save user %s", err.Error()))
+	}
+	user.ID = userID
 	return nil
 }
