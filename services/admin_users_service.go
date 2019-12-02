@@ -6,8 +6,8 @@ import (
 )
 
 // GetAdminUser 管理者ユーザーの取得
-func GetAdminUser(adminID int64)(*users.User, *errors.RestErr){
-	result := &users.User{ID: adminID}
+func GetAdminUser(adminID int64)(*users.AdminUser, *errors.RestErr){
+	result := &users.AdminUser{ID: adminID}
 	if err := result.Get(); err != nil{
 		return nil, err
 	}
