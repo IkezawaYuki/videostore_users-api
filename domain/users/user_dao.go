@@ -10,6 +10,7 @@ import (
 
 const (
 	queryInsertUser = "INSERT INTO users(first_name, last_name, nick_name, email, age, date_created) VALUES(?,?,?,?,?,?)"
+	indexUniqueEmail = "EMAIL"
 )
 var (
 	userDB = make(map[int64]*User)
@@ -41,7 +42,7 @@ func (user *User) Save()*errors.RestErr{
 	insertResult, err := stmt.Exec(user.FirstName, user.LastName, user.NickName, user.Email, user.Age, user.DateCreated)
 	if err != nil{
 		fmt.Println(err.Error())
-		if strings.Contains(err.Error(), "EMAIL"){
+		if strings.Contains(err.Error(), indexUniqueEmail){
 			return errors.NewBadRequestErr(fmt.Sprintf("email %s already exists", user.Email))
 		}
 		return errors.NewInternalServerErr(
