@@ -5,10 +5,11 @@ import (
 	"github.com/IkezawaYuki/videostore_users-api/datasources/mysql/users_db"
 	"github.com/IkezawaYuki/videostore_users-api/utils/date_utils"
 	"github.com/IkezawaYuki/videostore_users-api/utils/errors"
+	"strings"
 )
 
 const (
-	queryInsertUser = "INSERT INTO users(first_name, last_name, nickname, email, age, date_created) VALUES(?,?,?,?,?,?)"
+	queryInsertUser = "INSERT INTO users(first_name, last_name, nick_name, email, age, date_created) VALUES(?,?,?,?,?,?)"
 )
 var (
 	userDB = make(map[int64]*User)
@@ -39,6 +40,10 @@ func (user *User) Save()*errors.RestErr{
 	user.DateCreated = date_utils.GetNowString()
 	insertResult, err := stmt.Exec(user.FirstName, user.LastName, user.NickName, user.Email, user.Age, user.DateCreated)
 	if err != nil{
+		fmt.Println(err.Error())
+		if strings.Contains(err.Error(), "EMAIL"){
+			return errors.NewBadRequestErr(fmt.Sprintf("email %s already exists", user.Email))
+		}
 		return errors.NewInternalServerErr(
 			fmt.Sprintf("error when trying to save user %s", err.Error()))
 	}

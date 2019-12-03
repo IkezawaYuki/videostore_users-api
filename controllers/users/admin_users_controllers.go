@@ -1,6 +1,7 @@
 package users
 
 import (
+	"github.com/IkezawaYuki/videostore_users-api/domain/users"
 	"github.com/IkezawaYuki/videostore_users-api/services"
 	"github.com/IkezawaYuki/videostore_users-api/utils/errors"
 	"github.com/gin-gonic/gin"
@@ -24,5 +25,13 @@ func GetAdminUser(c *gin.Context) {
 
 // CreateUser 管理者ユーザーの登録
 func CreateAdminUser(c *gin.Context) {
+	var adminUser users.AdminUser
+	if err := c.ShouldBindJSON(&adminUser); err != nil{
+		restErr := errors.NewBadRequestErr("Invalid json body")
+		c.JSON(restErr.Status, restErr)
+		return
+	}
+	// todo
+
 	c.String(http.StatusNotImplemented, "implement me!\n")
 }
