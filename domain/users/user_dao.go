@@ -9,25 +9,30 @@ import (
 )
 
 const (
-	queryInsertUser = "INSERT INTO users(first_name, last_name, nick_name, email, age, date_created) VALUES(?,?,?,?,?,?)"
+	queryInsertUser = "INSERT INTO users(first_name, last_name, nick_name, email, age, date_created) VALUES(?,?,?,?,?,?);"
+	querySelectUser = "SELECT id, first_name, last_name, nick_name, email, age, date_created FROM users WHERE id = ?;"
 	indexUniqueEmail = "EMAIL"
+	errorNoRows = "no rows in result"
 )
-var (
-	userDB = make(map[int64]*User)
-)
+
 
 func (user *User) Get() *errors.RestErr{
-	result := userDB[user.ID]
-
-	if result == nil{
-		return errors.NewNotFoundErr(fmt.Sprintf("user_id %d is not found", user.ID))
+	stmt, err := users_db.Client.Prepare(querySelectUser)
+	if err != nil {
+		return errors.NewInternalServerErr(err.Error())
 	}
-	user.NickName = result.NickName
-	user.FirstName = result.FirstName
-	user.LastName = result.LastName
-	user.Age = result.Age
-	user.Email = result.Email
-	user.DateCreated = result.DateCreated
+	defer stmt.Close()
+
+	result := stmt.QueryRow(user.ID)
+	if err := result.Scan(&user.ID, &user.FirstName, &user.LastName, &user.NickName, &user.Email, &user.Age, &user.DateCreated); err != nil{
+		if strings.Contains(err.Error(), errorNoRows){
+			return errors.NewNotFoundErr(fmt.Sprintf("user %d not found", user.ID))
+		}
+
+		fmt.Println(err)
+		return errors.NewInternalServerErr(fmt.Sprintf("error when trying to get user %d: %s", user.ID, err.Error()))
+	}
+
 	return nil
 }
 
