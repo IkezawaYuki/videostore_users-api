@@ -15,7 +15,6 @@ const (
 	errorNoRows = "no rows in result"
 )
 
-
 func (user *User) Get() *errors.RestErr{
 	stmt, err := users_db.Client.Prepare(querySelectUser)
 	if err != nil {
@@ -28,8 +27,6 @@ func (user *User) Get() *errors.RestErr{
 		if strings.Contains(err.Error(), errorNoRows){
 			return errors.NewNotFoundErr(fmt.Sprintf("user %d not found", user.ID))
 		}
-
-		fmt.Println(err)
 		return errors.NewInternalServerErr(fmt.Sprintf("error when trying to get user %d: %s", user.ID, err.Error()))
 	}
 

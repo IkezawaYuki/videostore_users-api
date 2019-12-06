@@ -10,6 +10,7 @@ import (
 
 const (
 	queryInsertAdminUser = "INSERT INTO admin_users(user_id, first_name, last_name, nick_name, email, age, date_created) VALUES(?,?,?,?,?,?,?)"
+	querySelectAdminUser = "SELECT id, user_id, first_name, last_name, nick_name, email, age, date_created FROM admin_users WHERE id = ?;"
 	indexUniqueAdminEmail = "ADMIN_EMAIL"
 )
 
@@ -18,17 +19,27 @@ var (
 )
 
 func (adminUser *AdminUser) Get() *errors.RestErr{
-	result := adminUserDB[adminUser.ID]
-	if result == nil{
-		return errors.NewNotFoundErr(fmt.Sprintf("user_id %d is not found", adminUser.ID))
+	stmt, err := users_db.Client.Prepare(querySelectAdminUser)
+	if err != nil {
+		return errors.NewInternalServerErr(err.Error())
 	}
-	adminUser.UserID = result.UserID
-	adminUser.NickName = result.NickName
-	adminUser.FirstName = result.FirstName
-	adminUser.LastName = result.LastName
-	adminUser.Age = result.Age
-	adminUser.Email = result.Email
-	adminUser.DateCreated = result.DateCreated
+	defer stmt.Close()
+
+	result := stmt.QueryRow(adminUser.ID)
+	if err := result.Scan(&adminUser.ID,
+		&adminUser.UserID,
+		&adminUser.FirstName,
+		&adminUser.LastName,
+		&adminUser.NickName,
+		&adminUser.Email,
+		&adminUser.Age,
+		&adminUser.DateCreated); err != nil{
+		if strings.Contains(err.Error(), errorNoRows){
+			return errors.NewNotFoundErr(fmt.Sprintf("admin_user %d not found", adminUser.ID))
+		}
+		return errors.NewInternalServerErr(fmt.Sprintf("error when trying to get user %d: %s", adminUser.ID, err.Error()))
+	}
+
 	return nil
 }
 
@@ -41,7 +52,6 @@ func (adminUser *AdminUser) Save()*errors.RestErr{
 	defer stmt.Close()
 	adminUser.DateCreated = date_utils.GetNowString()
 
-	// todo ユーザー登録していないものは管理者ユーザーにはなれないようにする。
 
 	insertResult, err := stmt.Exec(adminUser.UserID, adminUser.FirstName, adminUser.NickName, adminUser.Email, adminUser.Age, adminUser.DateCreated)
 	if err != nil{
