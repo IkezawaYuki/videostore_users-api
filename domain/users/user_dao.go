@@ -84,3 +84,22 @@ func (user *User) Delete() *errors.RestErr {
 
 	return nil
 }
+
+func (user *User) FindByStatus(status string) ([]User, *errors.RestErr){
+	stmt, err := users_db.Client.Prepare(queryFindUserByStatus)
+	if err != nil{
+		return nil, errors.NewInternalServerErr(err.Error())
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query(status)
+	if err != nil{
+		return nil, errors.NewInternalServerErr(err.Error())
+	}
+	rows.Close()
+
+	result := make([]User, 0)
+	// todo
+
+	return result, nil
+}
