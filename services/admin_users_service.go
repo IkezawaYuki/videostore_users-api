@@ -24,3 +24,48 @@ func CreateAdminUser(user users.AdminUser)(*users.AdminUser, *errors.RestErr){
 	}
 	return &user, nil
 }
+
+
+// UpdateAdminUser ユーザー情報の変更
+func UpdateAdminUser(isPartial bool, adminUser users.AdminUser)(*users.AdminUser, *errors.RestErr){
+	current, err := GetAdminUser(adminUser.ID)
+	if err != nil{
+		return nil, err
+	}
+
+	if isPartial {
+		if adminUser.FirstName != ""{
+			current.FirstName = adminUser.FirstName
+		}
+		if adminUser.LastName != ""{
+			current.LastName = adminUser.LastName
+		}
+		if adminUser.NickName != ""{
+			current.NickName = adminUser.NickName
+		}
+		if adminUser.Email != ""{
+			current.Email = adminUser.Email
+		}
+		if adminUser.Age != 0{
+			current.Age = adminUser.Age
+		}
+
+	} else {
+		current.FirstName = adminUser.FirstName
+		current.LastName = adminUser.LastName
+		current.NickName = adminUser.NickName
+		current.Email = adminUser.Email
+		current.Age = adminUser.Age
+	}
+
+	if err := current.Update(); err != nil{
+		return nil, err
+	}
+	return current, nil
+}
+
+// DeleteAdminUser ユーザー情報の削除
+func DeleteAdminUser(adminUserID int64) *errors.RestErr{
+	adminUser := &users.AdminUser{ID: adminUserID}
+	return adminUser.Delete()
+}

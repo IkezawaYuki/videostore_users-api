@@ -12,6 +12,8 @@ import (
 const (
 	queryInsertAdminUser = "INSERT INTO admin_users(user_id, first_name, last_name, nick_name, email, age, date_created) VALUES(?,?,?,?,?,?,?)"
 	querySelectAdminUser = "SELECT id, user_id, first_name, last_name, nick_name, email, age, date_created FROM admin_users WHERE id = ?;"
+	queryUpdateAdminUser = "UPDATE users SET first_name=?, last_name=?, nick_name=?, email=?, age=? WHERE id=?;"
+	queryDeleteAdminUser = "DELETE FROM users WHERE id = ?"
 	indexUniqueAdminEmail = "ADMIN_EMAIL"
 )
 
@@ -71,7 +73,31 @@ func (adminUser *AdminUser) Save()*errors.RestErr{
 
 }
 
-func (adminUser *AdminUser) Update() *errors.RestErr{
+
+func (adminUser *AdminUser) Update()*errors.RestErr{
+	stmt, err := users_db.Client.Prepare(queryUpdateAdminUser)
+	if err != nil{
+		return errors.NewInternalServerErr(err.Error())
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(adminUser.FirstName, adminUser.LastName, adminUser.NickName,adminUser.Email, adminUser.Age, adminUser.ID)
+	if err != nil{
+		return mysql_utils.ParseError(err)
+	}
+	return nil
+}
+
+func (adminUser *AdminUser) Delete() *errors.RestErr {
+	stmt, err := users_db.Client.Prepare(queryDeleteAdminUser)
+	if err != nil{
+		return errors.NewInternalServerErr(err.Error())
+	}
+	defer stmt.Close()
+
+	if _, err = stmt.Exec(adminUser.ID); err != nil{
+		return mysql_utils.ParseError(err)
+	}
 
 	return nil
 }

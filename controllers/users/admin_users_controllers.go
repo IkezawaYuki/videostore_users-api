@@ -31,7 +31,54 @@ func CreateAdminUser(c *gin.Context) {
 		c.JSON(restErr.Status, restErr)
 		return
 	}
-	// todo
+	result, saveErr := services.CreateAdminUser(adminUser)
+	if saveErr != nil {
+		c.JSON(saveErr.Status, saveErr)
+		return
+	}
 
-	c.String(http.StatusNotImplemented, "implement me!\n")
+	c.JSON(http.StatusOK, result)
 }
+
+
+// UpdateUser ユーザー情報の変更
+func UpdateAdminUser(c *gin.Context){
+	userID, userErr := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if userErr != nil{
+		err := errors.NewBadRequestErr("user number should be number")
+		c.JSON(err.Status, err)
+	}
+
+	var user users.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		restErr := errors.NewBadRequestErr("Invalid json body")
+		c.JSON(restErr.Status, restErr)
+		return
+	}
+	user.ID = userID
+	isPartial := c.Request.Method == http.MethodPatch
+	result, err := services.UpdateAdminUser(isPartial, user)
+	if err != nil{
+		c.JSON(err.Status, err)
+		return
+	}
+	c.JSON(http.StatusOK, result)
+
+}
+
+// DeleteUser ユーザー情報の削除
+func DeleteAdminUser(c *gin.Context) {
+	userID, userErr := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if userErr != nil {
+		err := errors.NewBadRequestErr("user number should be number")
+		c.JSON(err.Status, err)
+		return
+	}
+
+	if err := services.DeleteAdminUser(userID); err != nil {
+		c.JSON(err.Status, err)
+	}
+
+	c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
+}
+
