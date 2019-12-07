@@ -9,7 +9,9 @@ import (
 	"strconv"
 )
 
-// GetUser ユーザーの取得
+
+
+// GetUser ユーザー情報の取得
 func GetUser(c *gin.Context) {
 	userID, userErr := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if userErr != nil{
@@ -25,7 +27,7 @@ func GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-// CreateUser ユーザーの登録
+// CreateUser ユーザー情報の登録
 func CreateUser(c *gin.Context) {
 	var user users.User
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -43,7 +45,43 @@ func CreateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-// FindUser ユーザーの検索
-//func FindUser(c *gin.Context){
-////	c.String(http.StatusNotImplemented, "implement me!")
-////}
+// UpdateUser ユーザー情報の変更
+func UpdateUser(c *gin.Context){
+	userID, userErr := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if userErr != nil{
+		err := errors.NewBadRequestErr("user number should be number")
+		c.JSON(err.Status, err)
+	}
+
+	var user users.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		restErr := errors.NewBadRequestErr("Invalid json body")
+		c.JSON(restErr.Status, restErr)
+		return
+	}
+	user.ID = userID
+	isPartial := c.Request.Method == http.MethodPatch
+	result, err := services.UpdateUser(isPartial, user)
+	if err != nil{
+		c.JSON(err.Status, err)
+		return
+	}
+	c.JSON(http.StatusOK, result)
+
+}
+
+// DeleteUser ユーザー情報の削除
+func DeleteUser(c *gin.Context){
+	userID, userErr := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if userErr != nil{
+		err := errors.NewBadRequestErr("user number should be number")
+		c.JSON(err.Status, err)
+		return
+	}
+
+	if err := services.DeleteUser(userID); err != nil{
+		c.JSON(err.Status, err)
+	}
+
+	c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
+}

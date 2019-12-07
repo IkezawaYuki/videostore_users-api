@@ -5,6 +5,7 @@ import (
 	"github.com/IkezawaYuki/videostore_users-api/datasources/mysql/users_db"
 	"github.com/IkezawaYuki/videostore_users-api/utils/date_utils"
 	"github.com/IkezawaYuki/videostore_users-api/utils/errors"
+	"github.com/IkezawaYuki/videostore_users-api/utils/mysql_utils"
 	"strings"
 )
 
@@ -26,18 +27,16 @@ func (adminUser *AdminUser) Get() *errors.RestErr{
 	defer stmt.Close()
 
 	result := stmt.QueryRow(adminUser.ID)
-	if err := result.Scan(&adminUser.ID,
+	if getErr := result.Scan(&adminUser.ID,
 		&adminUser.UserID,
 		&adminUser.FirstName,
 		&adminUser.LastName,
 		&adminUser.NickName,
 		&adminUser.Email,
 		&adminUser.Age,
-		&adminUser.DateCreated); err != nil{
-		if strings.Contains(err.Error(), errorNoRows){
-			return errors.NewNotFoundErr(fmt.Sprintf("admin_user %d not found", adminUser.ID))
-		}
-		return errors.NewInternalServerErr(fmt.Sprintf("error when trying to get user %d: %s", adminUser.ID, err.Error()))
+		&adminUser.DateCreated); getErr != nil{
+		fmt.Println(getErr)
+		return mysql_utils.ParseError(getErr)
 	}
 
 	return nil
@@ -52,8 +51,8 @@ func (adminUser *AdminUser) Save()*errors.RestErr{
 	defer stmt.Close()
 	adminUser.DateCreated = date_utils.GetNowString()
 
-
-	insertResult, err := stmt.Exec(adminUser.UserID, adminUser.FirstName, adminUser.NickName, adminUser.Email, adminUser.Age, adminUser.DateCreated)
+	insertResult, err := stmt.Exec(adminUser.UserID,
+		adminUser.FirstName, adminUser.NickName, adminUser.Email, adminUser.Age, adminUser.DateCreated)
 	if err != nil{
 		fmt.Println(err.Error())
 		if strings.Contains(err.Error(), indexUniqueAdminEmail){
@@ -70,5 +69,9 @@ func (adminUser *AdminUser) Save()*errors.RestErr{
 	adminUser.ID = adminUserID
 	return nil
 
+}
 
+func (adminUser *AdminUser) Update() *errors.RestErr{
+
+	return nil
 }
