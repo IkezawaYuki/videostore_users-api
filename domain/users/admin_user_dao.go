@@ -69,8 +69,8 @@ func (adminUser *AdminUser) Save()*errors.RestErr{
 			fmt.Sprintf("error when trying to save user %s", err.Error()))
 	}
 	adminUser.ID = adminUserID
-	return nil
 
+	return nil
 }
 
 
