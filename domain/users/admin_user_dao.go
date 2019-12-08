@@ -14,7 +14,7 @@ const (
 	querySelectAdminUser = "SELECT id, user_id, first_name, last_name, nick_name, email, age, date_created FROM admin_users WHERE id = ?;"
 	queryUpdateAdminUser = "UPDATE users SET first_name=?, last_name=?, nick_name=?, email=?, age=? WHERE id=?;"
 	queryDeleteAdminUser = "DELETE FROM users WHERE id = ?"
-	queryFindUserByStatus = "SELECT id, user_id, first_name, last_name, nick_name, email, age, date_created, status FROM admin_users WHERE status = ?;"
+	queryFindAdminUserByStatus = "SELECT id, user_id, first_name, last_name, nick_name, email, age, date_created, status FROM admin_users WHERE status = ?;"
 	indexUniqueAdminEmail = "ADMIN_EMAIL"
 )
 

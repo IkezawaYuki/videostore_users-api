@@ -14,6 +14,7 @@ func mapUrls(){
 	router.PUT("/users/:user_id", users.UpdateUser)
 	router.PATCH("/users/:user_id", users.UpdateUser)
 	router.DELETE("/users/:user_id", users.DeleteUser)
+	router.GET("/internal/users/search", users.Search)
 
 	// 管理者ユーザー関連
 	router.GET("/admin/users/:admin_id", users.GetAdminUser)
