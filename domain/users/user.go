@@ -32,7 +32,6 @@ func (user *User) Validate() *errors.RestErr {
 		return errors.NewBadRequestErr("Invalid email address")
 	}
 
-	// todo パスワードのハッシュ化
 	user.Password = strings.TrimSpace(strings.ToLower(user.Password))
 	if user.Password == ""{
 		return errors.NewBadRequestErr("Invalid password")
