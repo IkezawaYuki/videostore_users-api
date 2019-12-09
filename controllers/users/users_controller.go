@@ -10,7 +10,6 @@ import (
 )
 
 
-
 // GetUser ユーザー情報の取得
 func GetUser(c *gin.Context) {
 	userID, userErr := strconv.ParseInt(c.Param("user_id"), 10, 64)
@@ -19,7 +18,7 @@ func GetUser(c *gin.Context) {
 		c.JSON(err.Status, err)
 	}
 
-	user, getErr := services.GetUser(userID)
+	user, getErr := services.UserService.GetUser(userID)
 	if getErr != nil{
 		c.JSON(getErr.Status, getErr)
 		return
@@ -36,7 +35,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	result, saveErr := services.CreateUser(user)
+	result, saveErr := services.UserService.CreateUser(user)
 	if saveErr != nil {
 		c.JSON(saveErr.Status, saveErr)
 		return
@@ -61,7 +60,7 @@ func UpdateUser(c *gin.Context){
 	}
 	user.ID = userID
 	isPartial := c.Request.Method == http.MethodPatch
-	result, err := services.UpdateUser(isPartial, user)
+	result, err := services.UserService.UpdateUser(isPartial, user)
 	if err != nil{
 		c.JSON(err.Status, err)
 		return
@@ -79,7 +78,7 @@ func DeleteUser(c *gin.Context){
 		return
 	}
 
-	if err := services.DeleteUser(userID); err != nil{
+	if err := services.UserService.DeleteUser(userID); err != nil{
 		c.JSON(err.Status, err)
 	}
 
@@ -89,7 +88,7 @@ func DeleteUser(c *gin.Context){
 
 func Search(c *gin.Context){
 	status := c.Query("status")
-	users, err := services.SearchUser(status)
+	users, err := services.UserService.SearchUser(status)
 	if err != nil{
 		c.JSON(err.Status, err)
 		return
