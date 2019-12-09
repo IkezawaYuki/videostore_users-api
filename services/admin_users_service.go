@@ -69,3 +69,9 @@ func DeleteAdminUser(adminUserID int64) *errors.RestErr{
 	adminUser := &users.AdminUser{ID: adminUserID}
 	return adminUser.Delete()
 }
+
+// Search ステータスによるユーザーの検索
+func SearchAdminUser(status string)(users.AdminUsers, *errors.RestErr){
+	dao := users.AdminUser{}
+	return dao.FindByStatus(status)
+}

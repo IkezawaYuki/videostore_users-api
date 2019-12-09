@@ -82,3 +82,13 @@ func DeleteAdminUser(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
 }
 
+
+func SearchAdminUser(c *gin.Context){
+	status := c.Query("status")
+	users, err := services.SearchAdminUser(status)
+	if err != nil{
+		c.JSON(err.Status, err)
+		return
+	}
+	c.JSON(http.StatusOK, users.Marshall(c.GetHeader("X-Public") == "true"))
+}

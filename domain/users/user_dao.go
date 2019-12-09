@@ -92,8 +92,6 @@ func (user *User) FindByStatus(status string) ([]User, *errors.RestErr){
 		return nil, errors.NewInternalServerErr(err.Error())
 	}
 	defer stmt.Close()
-	fmt.Println(status)
-	fmt.Println(queryFindUserByStatus)
 
 	rows, err := stmt.Query(status)
 	if err != nil{

@@ -7,6 +7,13 @@ import (
 	"github.com/IkezawaYuki/videostore_users-api/utils/errors"
 )
 
+var (
+	UserService userService = userService{}
+)
+
+type userService struct {
+}
+
 
 // GetUser ユーザー情報の取得
 func GetUser(userID int64)(*users.User, *errors.RestErr){
@@ -77,7 +84,7 @@ func DeleteUser(userID int64) *errors.RestErr{
 }
 
 // Search ステータスによるユーザーの検索
-func Search(status string)([]users.User, *errors.RestErr){
+func SearchUser(status string)(users.Users, *errors.RestErr){
 	dao := users.User{}
 	return dao.FindByStatus(status)
 }

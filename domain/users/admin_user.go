@@ -19,6 +19,8 @@ type AdminUser struct {
 	Password    string `json:"-"`
 }
 
+type AdminUsers []AdminUser
+
 func (adminUser *AdminUser) Validate() *errors.RestErr{
 	adminUser.Email = strings.TrimSpace(strings.ToLower(adminUser.Email))
 	if adminUser.Email == "" {
