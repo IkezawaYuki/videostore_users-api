@@ -16,7 +16,7 @@ func GetAdminUser(c *gin.Context) {
 		err := errors.NewBadRequestErr("admin user number should be number")
 		c.JSON(err.Status, err)
 	}
-	adminUser, getErr := services.GetAdminUser(adminID)
+	adminUser, getErr := services.AdminUserService.GetAdminUser(adminID)
 	if getErr != nil{
 		c.JSON(getErr.Status, getErr)
 	}
@@ -31,7 +31,7 @@ func CreateAdminUser(c *gin.Context) {
 		c.JSON(restErr.Status, restErr)
 		return
 	}
-	result, saveErr := services.CreateAdminUser(adminUser)
+	result, saveErr := services.AdminUserService.CreateAdminUser(adminUser)
 	if saveErr != nil {
 		c.JSON(saveErr.Status, saveErr)
 		return
@@ -57,7 +57,7 @@ func UpdateAdminUser(c *gin.Context){
 	}
 	adminUser.ID = userID
 	isPartial := c.Request.Method == http.MethodPatch
-	result, err := services.UpdateAdminUser(isPartial, adminUser)
+	result, err := services.AdminUserService.UpdateAdminUser(isPartial, adminUser)
 	if err != nil{
 		c.JSON(err.Status, err)
 		return
@@ -75,7 +75,7 @@ func DeleteAdminUser(c *gin.Context) {
 		return
 	}
 
-	if err := services.DeleteAdminUser(userID); err != nil {
+	if err := services.AdminUserService.DeleteAdminUser(userID); err != nil {
 		c.JSON(err.Status, err)
 	}
 
@@ -85,7 +85,7 @@ func DeleteAdminUser(c *gin.Context) {
 
 func SearchAdminUser(c *gin.Context){
 	status := c.Query("status")
-	users, err := services.SearchAdminUser(status)
+	users, err := services.AdminUserService.SearchAdminUser(status)
 	if err != nil{
 		c.JSON(err.Status, err)
 		return

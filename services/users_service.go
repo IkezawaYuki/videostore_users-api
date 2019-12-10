@@ -8,10 +8,10 @@ import (
 )
 
 var (
-	UserService userService = userService{}
+	UsersService userServiceInterface = &usersService{}
 )
 
-type userService struct {
+type usersService struct {
 }
 
 type userServiceInterface interface {
@@ -23,7 +23,7 @@ type userServiceInterface interface {
 }
 
 // GetUser ユーザー情報の取得
-func (s *userService) GetUser(userID int64)(*users.User, *errors.RestErr){
+func (s *usersService) GetUser(userID int64)(*users.User, *errors.RestErr){
 	result := &users.User{ID: userID}
 	if err := result.Get(); err != nil{
 		return nil, err
@@ -32,7 +32,7 @@ func (s *userService) GetUser(userID int64)(*users.User, *errors.RestErr){
 }
 
 // CreateUser ユーザー情報の新規追加
-func (s *userService) CreateUser(user users.User)(*users.User, *errors.RestErr){
+func (s *usersService) CreateUser(user users.User)(*users.User, *errors.RestErr){
 	if err := user.Validate(); err != nil{
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (s *userService) CreateUser(user users.User)(*users.User, *errors.RestErr){
 }
 
 // UpdateUser ユーザー情報の変更
-func (s *userService) UpdateUser(isPartial bool, user users.User)(*users.User, *errors.RestErr){
+func (s *usersService) UpdateUser(isPartial bool, user users.User)(*users.User, *errors.RestErr){
 	current := &users.User{ID: user.ID}
 
 	if err := current.Get();err != nil{
@@ -86,13 +86,13 @@ func (s *userService) UpdateUser(isPartial bool, user users.User)(*users.User, *
 }
 
 // DeleteUser ユーザー情報の削除
-func (s *userService) DeleteUser(userID int64) *errors.RestErr{
+func (s *usersService) DeleteUser(userID int64) *errors.RestErr{
 	user := &users.User{ID: userID}
 	return user.Delete()
 }
 
 // Search ステータスによるユーザーの検索
-func (s *userService) SearchUser(status string)(users.Users, *errors.RestErr){
+func (s *usersService) SearchUser(status string)(users.Users, *errors.RestErr){
 	dao := users.User{}
 	return dao.FindByStatus(status)
 }
