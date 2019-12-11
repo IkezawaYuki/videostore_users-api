@@ -3,6 +3,7 @@ package users
 import (
 	"fmt"
 	"github.com/IkezawaYuki/videostore_users-api/datasources/mysql/users_db"
+	"github.com/IkezawaYuki/videostore_users-api/logger"
 	"github.com/IkezawaYuki/videostore_users-api/utils/errors"
 	"github.com/IkezawaYuki/videostore_users-api/utils/mysql_utils"
 )
@@ -18,7 +19,8 @@ const (
 func (user *User) Get() *errors.RestErr{
 	stmt, err := users_db.Client.Prepare(querySelectUser)
 	if err != nil {
-		return errors.NewInternalServerErr(err.Error())
+		logger.Error("error where trying to prepare get user statement", err)
+		return errors.NewInternalServerErr("database error")
 	}
 	defer stmt.Close()
 
@@ -32,7 +34,8 @@ func (user *User) Get() *errors.RestErr{
 		&user.DateCreated,
 		&user.Status,
 		&user.Password); getErr != nil{
-		return mysql_utils.ParseError(getErr)
+		logger.Error("error where trying to get user by id", getErr)
+		return errors.NewInternalServerErr("database error")
 	}
 	fmt.Println(result)
 	return nil
