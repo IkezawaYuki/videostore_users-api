@@ -5,7 +5,6 @@ import (
 	"github.com/IkezawaYuki/videostore_users-api/datasources/mysql/users_db"
 	"github.com/IkezawaYuki/videostore_users-api/logger"
 	"github.com/IkezawaYuki/videostore_users-api/utils/errors"
-	"github.com/IkezawaYuki/videostore_users-api/utils/mysql_utils"
 )
 
 const (
@@ -96,33 +95,35 @@ func (user *User) Delete() *errors.RestErr {
 	return nil
 }
 
-// todo log
 func (user *User) FindByStatus(status string) ([]User, *errors.RestErr){
 	stmt, err := users_db.Client.Prepare(queryFindUserByStatus)
 	if err != nil{
-		return nil, errors.NewInternalServerErr(err.Error())
+		logger.Error("error where trying to prepare find users statement", err)
+		return nil, errors.NewInternalServerErr("database error")
 	}
 	defer stmt.Close()
 
 	rows, err := stmt.Query(status)
 	if err != nil{
-		return nil, errors.NewInternalServerErr(err.Error())
+		logger.Error("error where trying to find users", err)
+		return nil, errors.NewInternalServerErr("database error")
 	}
 	defer rows.Close()
 
-	result := make([]User, 0)
+	results := make([]User, 0)
 	for rows.Next(){
 		var user User
 		err := rows.Scan(&user.ID, &user.FirstName, &user.LastName, &user.NickName, &user.Email, &user.Age, &user.DateCreated, &user.Status)
 		if  err != nil {
-			return nil, mysql_utils.ParseError(err)
+			logger.Error("error when scan user row into user struct", err)
+			return nil, errors.NewInternalServerErr("database error")
 		}
-		result = append(result, user)
+		results = append(results, user)
 	}
 
-	if len(result) == 0{
+	if len(results) == 0{
 		return nil, errors.NewNotFoundErr(fmt.Sprintf("no user matching status %s", status))
 	}
 
-	return result, nil
+	return results, nil
 }
