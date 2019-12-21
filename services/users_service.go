@@ -20,6 +20,7 @@ type userServiceInterface interface {
 	UpdateUser(bool, users.User)(*users.User, *errors.RestErr)
 	DeleteUser(int64) *errors.RestErr
 	SearchUser(string)(users.Users, *errors.RestErr)
+	LoginUser(users.LoginRequest)(*users.User, *errors.RestErr)
 }
 
 // GetUser ユーザー情報の取得
@@ -49,7 +50,6 @@ func (s *usersService) CreateUser(user users.User)(*users.User, *errors.RestErr)
 // UpdateUser ユーザー情報の変更
 func (s *usersService) UpdateUser(isPartial bool, user users.User)(*users.User, *errors.RestErr){
 	current := &users.User{ID: user.ID}
-
 	if err := current.Get();err != nil{
 		return nil, err
 	}
@@ -95,4 +95,15 @@ func (s *usersService) DeleteUser(userID int64) *errors.RestErr{
 func (s *usersService) SearchUser(status string)(users.Users, *errors.RestErr){
 	dao := users.User{}
 	return dao.FindByStatus(status)
+}
+
+func (s *usersService) LoginUser(request users.LoginRequest)(*users.User, *errors.RestErr){
+	dao := &users.User{
+		Email: request.Email,
+		Password: crypto_utils.GetMd5(request.Password),
+	}
+	if err := dao.FindByEmailAndPassword(); err != nil{
+		return nil, err
+	}
+	return dao, nil
 }

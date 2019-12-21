@@ -5,6 +5,8 @@ import (
 	"github.com/IkezawaYuki/videostore_users-api/datasources/mysql/users_db"
 	"github.com/IkezawaYuki/videostore_users-api/logger"
 	"github.com/IkezawaYuki/videostore_users-api/utils/errors"
+	"github.com/IkezawaYuki/videostore_users-api/utils/mysql_utils"
+	"strings"
 )
 
 const (
@@ -12,7 +14,8 @@ const (
 	querySelectUser = "SELECT id, first_name, last_name, nick_name, email, age, date_created, status, password FROM users WHERE id = ?;"
 	queryUpdateUser = "UPDATE users SET first_name=?, last_name=?, nick_name=?, email=?, age=? WHERE id=?;"
 	queryDeleteUser = "DELETE FROM users WHERE id = ?"
-	queryFindUserByStatus = "SELECT id, first_name, last_name, nick_name, email, age, date_created, status FROM users WHERE status=?;"
+	queryFindByStatus = "SELECT id, first_name, last_name, nick_name, email, age, date_created, status FROM users WHERE status=?;"
+	queryFindByEmailAndPassword = "SELECT id, first_name, last_name, nick_name, email, age, date_created, status, password FROM users WHERE email=? AND password=?;"
 )
 
 func (user *User) Get() *errors.RestErr{
@@ -96,7 +99,7 @@ func (user *User) Delete() *errors.RestErr {
 }
 
 func (user *User) FindByStatus(status string) ([]User, *errors.RestErr){
-	stmt, err := users_db.Client.Prepare(queryFindUserByStatus)
+	stmt, err := users_db.Client.Prepare(queryFindByStatus)
 	if err != nil{
 		logger.Error("error where trying to prepare find users statement", err)
 		return nil, errors.NewInternalServerErr("database error")
@@ -126,4 +129,33 @@ func (user *User) FindByStatus(status string) ([]User, *errors.RestErr){
 	}
 
 	return results, nil
+}
+
+func (user *User) FindByEmailAndPassword() *errors.RestErr{
+	stmt, err := users_db.Client.Prepare(queryFindByEmailAndPassword)
+	if err != nil {
+		logger.Error("error where trying to prepare get user by email and password statement", err)
+		return errors.NewInternalServerErr("database error")
+	}
+	defer stmt.Close()
+
+	result := stmt.QueryRow(user.Email, user.Password)
+	if getErr := result.Scan(&user.ID,
+		&user.FirstName,
+		&user.LastName,
+		&user.NickName,
+		&user.Email,
+		&user.Age,
+		&user.DateCreated,
+		&user.Status,
+		&user.Password); getErr != nil{
+
+		if strings.Contains(getErr.Error(), mysql_utils.ErrorNoRows){
+			return errors.NewInternalServerErr("users not found")
+		}
+		logger.Error("error where trying to get user by email and password", getErr)
+		return errors.NewInternalServerErr("database error")
+	}
+
+	return nil
 }
