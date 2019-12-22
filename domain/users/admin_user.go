@@ -16,7 +16,7 @@ type AdminUser struct {
 	Email       string `json:"email"`
 	DateCreated string `json:"date_created"`
 	Status 		string `json:"status"`
-	Password    string `json:"-"`
+	Password    string `json:"password"`
 }
 
 type AdminUsers []AdminUser
@@ -28,6 +28,10 @@ func (adminUser *AdminUser) Validate() *errors.RestErr{
 	}
 	if adminUser.UserID > 0{
 		return errors.NewBadRequestErr("Invalid user id")
+	}
+	adminUser.Password = strings.TrimSpace(strings.ToLower(adminUser.Password))
+	if adminUser.Password == ""{
+		return errors.NewBadRequestErr("Invalid password")
 	}
 
 	return nil

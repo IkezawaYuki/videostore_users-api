@@ -20,5 +20,9 @@ func mapUrls(){
 	// 管理者ユーザー関連
 	router.GET("/admin/users/:admin_id", users.GetAdminUser)
 	router.POST("/admin/users", users.CreateAdminUser)
-
+	router.PUT("/admin/users/:user_id", users.UpdateAdminUser)
+	router.PATCH("/admin/users/:user_id", users.UpdateAdminUser)
+	router.DELETE("/admin/users/:user_id", users.DeleteAdminUser)
+	router.GET("/internal/admin/users/search", users.SearchAdminUser)
+	router.POST("/admin/users/login", users.LoginAdminUser)
 }

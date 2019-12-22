@@ -16,7 +16,7 @@ func GetAdminUser(c *gin.Context) {
 		err := errors.NewBadRequestErr("admin user number should be number")
 		c.JSON(err.Status, err)
 	}
-	adminUser, getErr := services.AdminUserService.GetAdminUser(adminID)
+	adminUser, getErr := services.AdminUsersService.GetAdminUser(adminID)
 	if getErr != nil{
 		c.JSON(getErr.Status, getErr)
 	}
@@ -31,7 +31,7 @@ func CreateAdminUser(c *gin.Context) {
 		c.JSON(restErr.Status, restErr)
 		return
 	}
-	result, saveErr := services.AdminUserService.CreateAdminUser(adminUser)
+	result, saveErr := services.AdminUsersService.CreateAdminUser(adminUser)
 	if saveErr != nil {
 		c.JSON(saveErr.Status, saveErr)
 		return
@@ -57,7 +57,7 @@ func UpdateAdminUser(c *gin.Context){
 	}
 	adminUser.ID = userID
 	isPartial := c.Request.Method == http.MethodPatch
-	result, err := services.AdminUserService.UpdateAdminUser(isPartial, adminUser)
+	result, err := services.AdminUsersService.UpdateAdminUser(isPartial, adminUser)
 	if err != nil{
 		c.JSON(err.Status, err)
 		return
@@ -75,20 +75,36 @@ func DeleteAdminUser(c *gin.Context) {
 		return
 	}
 
-	if err := services.AdminUserService.DeleteAdminUser(userID); err != nil {
+	if err := services.AdminUsersService.DeleteAdminUser(userID); err != nil {
 		c.JSON(err.Status, err)
 	}
 
 	c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
 }
 
-
 func SearchAdminUser(c *gin.Context){
 	status := c.Query("status")
-	users, err := services.AdminUserService.SearchAdminUser(status)
+	users, err := services.AdminUsersService.SearchAdminUser(status)
 	if err != nil{
 		c.JSON(err.Status, err)
 		return
 	}
 	c.JSON(http.StatusOK, users.Marshall(c.GetHeader("X-Public") == "true"))
+}
+
+
+func LoginAdminUser(c *gin.Context){
+	var loginRequest users.LoginRequest
+	if err := c.ShouldBindJSON(&loginRequest); err != nil{
+		restErr := errors.NewBadRequestErr("invalid json")
+		c.JSON(restErr.Status, restErr)
+		return
+	}
+	users, err := services.AdminUsersService.LoginAdminUser(loginRequest)
+	if err != nil{
+		c.JSON(err.Status, err)
+		return
+	}
+	c.JSON(http.StatusOK, users.Marshall(c.GetHeader("X-Public") == "true"))
+
 }

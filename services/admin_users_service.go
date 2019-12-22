@@ -2,14 +2,16 @@ package services
 
 import (
 	"github.com/IkezawaYuki/videostore_users-api/domain/users"
+	"github.com/IkezawaYuki/videostore_users-api/utils/crypto_utils"
+	"github.com/IkezawaYuki/videostore_users-api/utils/date_utils"
 	"github.com/IkezawaYuki/videostore_users-api/utils/errors"
 )
 
 var (
-	AdminUserService adminUserService = adminUserService{}
+	AdminUsersService adminUsersService = adminUsersService{}
 )
 
-type adminUserService struct {
+type adminUsersService struct {
 }
 
 type adminUserServiceInterface interface {
@@ -21,7 +23,7 @@ type adminUserServiceInterface interface {
 }
 
 // GetAdminUser 管理者ユーザーの取得
-func (as *adminUserService)GetAdminUser(adminID int64)(*users.AdminUser, *errors.RestErr){
+func (as *adminUsersService)GetAdminUser(adminID int64)(*users.AdminUser, *errors.RestErr){
 	result := &users.AdminUser{ID: adminID}
 	if err := result.Get(); err != nil{
 		return nil, err
@@ -30,18 +32,22 @@ func (as *adminUserService)GetAdminUser(adminID int64)(*users.AdminUser, *errors
 }
 
 // CreateAdminUser 管理者ユーザーの新規追加
-func (as *adminUserService)CreateAdminUser(user users.AdminUser)(*users.AdminUser, *errors.RestErr){
-	if err := user.Validate(); err != nil{
+func (as *adminUsersService)CreateAdminUser(adminUser users.AdminUser)(*users.AdminUser, *errors.RestErr){
+	if err := adminUser.Validate(); err != nil{
 		return nil, err
 	}
-	if err := user.Save(); err != nil{
+	adminUser.Status = users.StatusActive
+	adminUser.DateCreated = date_utils.GetNowString()
+	adminUser.Password = crypto_utils.GetMd5(adminUser.Password)
+
+	if err := adminUser.Save(); err != nil{
 		return nil, err
 	}
-	return &user, nil
+	return &adminUser, nil
 }
 
 // UpdateAdminUser ユーザー情報の変更
-func (as *adminUserService)UpdateAdminUser(isPartial bool, adminUser users.AdminUser)(*users.AdminUser, *errors.RestErr){
+func (as *adminUsersService)UpdateAdminUser(isPartial bool, adminUser users.AdminUser)(*users.AdminUser, *errors.RestErr){
 	current := &users.AdminUser{ID: adminUser.ID}
 
 	if err := current.Get();err != nil{
@@ -80,13 +86,24 @@ func (as *adminUserService)UpdateAdminUser(isPartial bool, adminUser users.Admin
 }
 
 // DeleteAdminUser ユーザー情報の削除
-func (as *adminUserService)DeleteAdminUser(adminUserID int64) *errors.RestErr{
+func (as *adminUsersService)DeleteAdminUser(adminUserID int64) *errors.RestErr{
 	adminUser := &users.AdminUser{ID: adminUserID}
 	return adminUser.Delete()
 }
 
 // Search ステータスによるユーザーの検索
-func (as *adminUserService)SearchAdminUser(status string)(users.AdminUsers, *errors.RestErr){
+func (as *adminUsersService)SearchAdminUser(status string)(users.AdminUsers, *errors.RestErr){
 	dao := users.AdminUser{}
 	return dao.FindByStatus(status)
+}
+
+func (as *adminUsersService) LoginAdminUser(request users.LoginRequest)(*users.AdminUser, *errors.RestErr){
+	dao := &users.AdminUser{
+		Email: request.Email,
+		Password: crypto_utils.GetMd5(request.Password),
+	}
+	if err := dao.FindByEmailAndPassword(); err != nil{
+		return nil, err
+	}
+	return dao, nil
 }

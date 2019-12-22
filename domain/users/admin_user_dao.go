@@ -3,6 +3,7 @@ package users
 import (
 	"fmt"
 	"github.com/IkezawaYuki/videostore_users-api/datasources/mysql/users_db"
+	"github.com/IkezawaYuki/videostore_users-api/logger"
 	"github.com/IkezawaYuki/videostore_users-api/utils/date_utils"
 	"github.com/IkezawaYuki/videostore_users-api/utils/errors"
 	"github.com/IkezawaYuki/videostore_users-api/utils/mysql_utils"
@@ -15,6 +16,7 @@ const (
 	queryUpdateAdminUser = "UPDATE admin_users SET first_name=?, last_name=?, nick_name=?, email=?, age=? WHERE id=?;"
 	queryDeleteAdminUser = "DELETE FROM admin_users WHERE id = ?"
 	queryFindAdminUserByStatus = "SELECT id, user_id, first_name, last_name, nick_name, email, age, date_created, status FROM admin_users WHERE status = ?;"
+	queryFindAdminUserByEmailAndPassword = "SELECT id, user_id, first_name, last_name, nick_name, email, age, date_created, status, password FROM admin_users WHERE email=? AND password=?;"
 	indexUniqueAdminEmail = "ADMIN_EMAIL"
 )
 
@@ -74,7 +76,6 @@ func (adminUser *AdminUser) Save()*errors.RestErr{
 	return nil
 }
 
-
 func (adminUser *AdminUser) Update()*errors.RestErr{
 	stmt, err := users_db.Client.Prepare(queryUpdateAdminUser)
 	if err != nil{
@@ -132,4 +133,34 @@ func (adminUser *AdminUser) FindByStatus(status string) ([]AdminUser, *errors.Re
 	}
 
 	return result, nil
+}
+
+func (adminUser *AdminUser) FindByEmailAndPassword() *errors.RestErr{
+	stmt, err := users_db.Client.Prepare(queryFindByEmailAndPassword)
+	if err != nil {
+		logger.Error("error where trying to prepare get user by email and password statement", err)
+		return errors.NewInternalServerErr("database error")
+	}
+	defer stmt.Close()
+
+	result := stmt.QueryRow(adminUser.Email, adminUser.Password)
+	if getErr := result.Scan(&adminUser.ID,
+		&adminUser.UserID,
+		&adminUser.FirstName,
+		&adminUser.LastName,
+		&adminUser.NickName,
+		&adminUser.Email,
+		&adminUser.Age,
+		&adminUser.DateCreated,
+		&adminUser.Status,
+		&adminUser.Password); getErr != nil{
+
+		if strings.Contains(getErr.Error(), mysql_utils.ErrorNoRows){
+			return errors.NewInternalServerErr("admin users not found")
+		}
+		logger.Error("error where trying to get user by email and password", getErr)
+		return errors.NewInternalServerErr("database error")
+	}
+
+	return nil
 }
