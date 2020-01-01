@@ -1,6 +1,7 @@
 package users
 
 import (
+	"github.com/IkezawaYuki/videostore_oauth-go/oauth"
 	"github.com/IkezawaYuki/videostore_users-api/domain/users"
 	"github.com/IkezawaYuki/videostore_users-api/services"
 	"github.com/IkezawaYuki/videostore_users-api/utils/errors"
@@ -12,6 +13,11 @@ import (
 
 // GetUser ユーザー情報の取得
 func GetUser(c *gin.Context) {
+	if err := oauth.AuthenticateRequest(c.Request); err != nil{
+		c.JSON(err.Status, err)
+		return
+	}
+
 	userID, userErr := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if userErr != nil{
 		err := errors.NewBadRequestErr("user number should be number")
@@ -23,7 +29,11 @@ func GetUser(c *gin.Context) {
 		c.JSON(getErr.Status, getErr)
 		return
 	}
-	c.JSON(http.StatusOK, user.Marshall(c.GetHeader("X-Public") == "true"))
+	if oauth.GetCallerID(c.Request) == user.ID{
+		c.JSON(http.StatusOK, user.Marshall(false))
+		return
+	}
+	c.JSON(http.StatusOK, user.Marshall(oauth.IsPublic(c.Request)))
 }
 
 // CreateUser ユーザー情報の登録
