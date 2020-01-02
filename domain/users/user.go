@@ -1,7 +1,7 @@
 package users
 
 import (
-	"github.com/IkezawaYuki/videostore_users-api/utils/errors"
+	"github.com/IkezawaYuki/videostore_utils-go/rest_errors"
 	"strings"
 )
 
@@ -24,19 +24,19 @@ type User struct {
 
 type Users []User
 
-func (user *User) Validate() *errors.RestErr {
+func (user *User) Validate() *rest_errors.RestErr {
 	user.FirstName = strings.TrimSpace(strings.ToLower(user.FirstName))
 	user.LastName = strings.TrimSpace(strings.ToLower(user.LastName))
 	user.NickName = strings.TrimSpace(strings.ToLower(user.NickName))
 
 	user.Email = strings.TrimSpace(strings.ToLower(user.Email))
 	if user.Email == "" {
-		return errors.NewBadRequestErr("Invalid email address")
+		return rest_errors.NewBadRequestError("Invalid email address")
 	}
 
 	user.Password = strings.TrimSpace(strings.ToLower(user.Password))
 	if user.Password == ""{
-		return errors.NewBadRequestErr("Invalid password")
+		return rest_errors.NewBadRequestError("Invalid password")
 	}
 
 	return nil

@@ -2,11 +2,12 @@ package users
 
 import (
 	"fmt"
+
 	"github.com/IkezawaYuki/videostore_users-api/datasources/mysql/users_db"
 	"github.com/IkezawaYuki/videostore_users-api/logger"
 	"github.com/IkezawaYuki/videostore_users-api/utils/date_utils"
-	"github.com/IkezawaYuki/videostore_users-api/utils/errors"
 	"github.com/IkezawaYuki/videostore_users-api/utils/mysql_utils"
+	"github.com/IkezawaYuki/videostore_utils-go/rest_errors"
 	"strings"
 )
 
@@ -24,10 +25,10 @@ var (
 	adminUserDB = make(map[int64]*AdminUser)
 )
 
-func (adminUser *AdminUser) Get() *errors.RestErr{
+func (adminUser *AdminUser) Get() *rest_errors.RestErr{
 	stmt, err := users_db.Client.Prepare(querySelectAdminUser)
 	if err != nil {
-		return errors.NewInternalServerErr(err.Error())
+		return rest_errors.NewInternalServerError(err.Error(), err)
 	}
 	defer stmt.Close()
 
@@ -48,10 +49,10 @@ func (adminUser *AdminUser) Get() *errors.RestErr{
 }
 
 
-func (adminUser *AdminUser) Save()*errors.RestErr{
+func (adminUser *AdminUser) Save()*rest_errors.RestErr{
 	stmt, err := users_db.Client.Prepare(queryInsertAdminUser)
 	if err != nil {
-		return errors.NewInternalServerErr(err.Error())
+		return rest_errors.NewInternalServerError(err.Error(), err)
 	}
 	defer stmt.Close()
 	adminUser.DateCreated = date_utils.GetNowString()
@@ -61,25 +62,25 @@ func (adminUser *AdminUser) Save()*errors.RestErr{
 	if err != nil{
 		fmt.Println(err.Error())
 		if strings.Contains(err.Error(), indexUniqueAdminEmail){
-			return errors.NewInternalServerErr(fmt.Sprintf("email %s already exits", adminUser.Email))
+			return rest_errors.NewInternalServerError(fmt.Sprintf("email %s already exits", adminUser.Email), err)
 		}
-		return errors.NewInternalServerErr(
-			fmt.Sprintf("error when trying to save user %s", err.Error()))
+		return rest_errors.NewInternalServerError(
+			fmt.Sprintf("error when trying to save user %s", err.Error()), err)
 	}
 	adminUserID, err := insertResult.LastInsertId()
 	if err != nil{
-		return errors.NewInternalServerErr(
-			fmt.Sprintf("error when trying to save user %s", err.Error()))
+		return rest_errors.NewInternalServerError(
+			fmt.Sprintf("error when trying to save user %s", err.Error()), err)
 	}
 	adminUser.ID = adminUserID
 
 	return nil
 }
 
-func (adminUser *AdminUser) Update()*errors.RestErr{
+func (adminUser *AdminUser) Update()*rest_errors.RestErr{
 	stmt, err := users_db.Client.Prepare(queryUpdateAdminUser)
 	if err != nil{
-		return errors.NewInternalServerErr(err.Error())
+		return rest_errors.NewInternalServerError(err.Error(), err)
 	}
 	defer stmt.Close()
 
@@ -90,10 +91,10 @@ func (adminUser *AdminUser) Update()*errors.RestErr{
 	return nil
 }
 
-func (adminUser *AdminUser) Delete() *errors.RestErr {
+func (adminUser *AdminUser) Delete() *rest_errors.RestErr {
 	stmt, err := users_db.Client.Prepare(queryDeleteAdminUser)
 	if err != nil{
-		return errors.NewInternalServerErr(err.Error())
+		return rest_errors.NewInternalServerError(err.Error(), err)
 	}
 	defer stmt.Close()
 
@@ -105,16 +106,16 @@ func (adminUser *AdminUser) Delete() *errors.RestErr {
 }
 
 
-func (adminUser *AdminUser) FindByStatus(status string) ([]AdminUser, *errors.RestErr) {
+func (adminUser *AdminUser) FindByStatus(status string) ([]AdminUser, *rest_errors.RestErr) {
 	stmt, err := users_db.Client.Prepare(queryFindAdminUserByStatus)
 	if err != nil {
-		return nil, errors.NewInternalServerErr(err.Error())
+		return nil, rest_errors.NewInternalServerError(err.Error(), err)
 	}
 	defer stmt.Close()
 
 	rows, err := stmt.Query(status)
 	if err != nil {
-		return nil, errors.NewInternalServerErr(err.Error())
+		return nil, rest_errors.NewInternalServerError(err.Error(), err)
 	}
 	defer rows.Close()
 
@@ -129,17 +130,17 @@ func (adminUser *AdminUser) FindByStatus(status string) ([]AdminUser, *errors.Re
 	}
 
 	if len(result) == 0 {
-		return nil, errors.NewNotFoundErr(fmt.Sprintf("no admin user matching status %s", status))
+		return nil, rest_errors.NewNotFoundError(fmt.Sprintf("no admin user matching status %s", status))
 	}
 
 	return result, nil
 }
 
-func (adminUser *AdminUser) FindByEmailAndPassword() *errors.RestErr{
+func (adminUser *AdminUser) FindByEmailAndPassword() *rest_errors.RestErr{
 	stmt, err := users_db.Client.Prepare(queryFindByEmailAndPassword)
 	if err != nil {
 		logger.Error("error where trying to prepare get user by email and password statement", err)
-		return errors.NewInternalServerErr("database error")
+		return rest_errors.NewInternalServerError("database error", err)
 	}
 	defer stmt.Close()
 
@@ -156,10 +157,10 @@ func (adminUser *AdminUser) FindByEmailAndPassword() *errors.RestErr{
 		&adminUser.Password); getErr != nil{
 
 		if strings.Contains(getErr.Error(), mysql_utils.ErrorNoRows){
-			return errors.NewInternalServerErr("admin users not found")
+			return rest_errors.NewInternalServerError("admin users not found", err)
 		}
 		logger.Error("error where trying to get user by email and password", getErr)
-		return errors.NewInternalServerErr("database error")
+		return rest_errors.NewInternalServerError("database error", err)
 	}
 
 	return nil
