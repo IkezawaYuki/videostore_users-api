@@ -1,7 +1,8 @@
 package mysql_utils
 
 import (
-	"github.com/IkezawaYuki/videostore_users-api/utils/errors"
+	"errors"
+	"github.com/IkezawaYuki/videostore_utils-go/rest_errors"
 	"github.com/go-sql-driver/mysql"
 	"strings"
 )
@@ -9,18 +10,19 @@ import (
 const (
 	ErrorNoRows = "no rows in result"
 )
-func ParseError(err error) *errors.RestErr{
+
+func ParseError(err error) *rest_errors.RestErr {
 	sqlErr, ok := err.(*mysql.MySQLError)
 	if !ok {
-		if strings.Contains(err.Error(), ErrorNoRows){
-			return errors.NewNotFoundErr("no record matching given id")
+		if strings.Contains(err.Error(), ErrorNoRows) {
+			return rest_errors.NewNotFoundError("no record matching given id")
 		}
-		return errors.NewInternalServerErr("error parsing database response")
+		return rest_errors.NewInternalServerError("error parsing database response", err)
 	}
 
 	switch sqlErr.Number {
 	case 1062:
-		return errors.NewBadRequestErr("invalid data")
+		return rest_errors.NewBadRequestError("invalid data")
 	}
-	return errors.NewInternalServerErr("error processing request")
+	return rest_errors.NewInternalServerError("error processing request", errors.New("database error"))
 }
