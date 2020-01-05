@@ -15,22 +15,22 @@ type AdminUser struct {
 	Age         int    `json:"age"`
 	Email       string `json:"email"`
 	DateCreated string `json:"date_created"`
-	Status 		string `json:"status"`
+	Status      string `json:"status"`
 	Password    string `json:"password"`
 }
 
 type AdminUsers []AdminUser
 
-func (adminUser *AdminUser) Validate() *rest_errors.RestErr{
+func (adminUser *AdminUser) Validate() rest_errors.RestErr {
 	adminUser.Email = strings.TrimSpace(strings.ToLower(adminUser.Email))
 	if adminUser.Email == "" {
 		return rest_errors.NewBadRequestError("Invalid email address")
 	}
-	if adminUser.UserID > 0{
+	if adminUser.UserID > 0 {
 		return rest_errors.NewBadRequestError("Invalid user id")
 	}
 	adminUser.Password = strings.TrimSpace(strings.ToLower(adminUser.Password))
-	if adminUser.Password == ""{
+	if adminUser.Password == "" {
 		return rest_errors.NewBadRequestError("Invalid password")
 	}
 

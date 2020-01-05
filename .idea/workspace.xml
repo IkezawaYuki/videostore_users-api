@@ -3,8 +3,18 @@
   <component name="ChangeListManager">
     <list default="true" id="4b7f2fdc-c104-43e7-a764-9d61b5b0c1d2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/application.go" beforeDir="false" afterPath="$PROJECT_DIR$/app/application.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/users/admin_users_controllers.go" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/users/admin_users_controllers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/users/users_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/users/users_controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/users/admin_user.go" beforeDir="false" afterPath="$PROJECT_DIR$/domain/users/admin_user.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/domain/users/admin_user_dao.go" beforeDir="false" afterPath="$PROJECT_DIR$/domain/users/admin_user_dao.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/users/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/domain/users/user.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/domain/users/user_dao.go" beforeDir="false" afterPath="$PROJECT_DIR$/domain/users/user_dao.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logger/logger.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/admin_users_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/admin_users_service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/users_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/users_service.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/mysql_utils/mysql_utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/mysql_utils/mysql_utils.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -123,6 +133,10 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="239" y="110" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1575378205089" />
+    <state x="444" y="260" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1578198786047">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="444" y="260" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1440.900@0.0.1440.900" timestamp="1578198786047" />
     <state x="608" y="160" key="#xdebugger.evaluate" timestamp="1577883309430">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
@@ -136,31 +150,35 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="474" y="222" key="EnvironmentVariablesDialog/0.0.1440.900@0.0.1440.900" timestamp="1575378204135" />
-    <state width="1398" height="244" key="GridCell.Tab.0.bottom" timestamp="1577963198412">
+    <state width="1398" height="250" key="GridCell.Tab.0.bottom" timestamp="1578199727803">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1398" height="244" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1577963198412" />
+    <state width="1398" height="250" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1578199727803" />
+    <state width="1398" height="244" key="GridCell.Tab.0.bottom/0.23.1440.822@0.23.1440.822" timestamp="1578127694869" />
     <state width="1398" height="244" key="GridCell.Tab.0.bottom/0.23.1440.823@0.23.1440.823" timestamp="1577882481514" />
     <state width="1398" height="303" key="GridCell.Tab.0.bottom/0.23.1440.825@0.23.1440.825" timestamp="1576906792140" />
     <state width="1398" height="244" key="GridCell.Tab.0.bottom/0.23.1440.826@0.23.1440.826" timestamp="1575721692075" />
-    <state width="1398" height="244" key="GridCell.Tab.0.center" timestamp="1577963198409">
+    <state width="1398" height="250" key="GridCell.Tab.0.center" timestamp="1578199727799">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1398" height="244" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1577963198409" />
+    <state width="1398" height="250" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1578199727799" />
+    <state width="1398" height="244" key="GridCell.Tab.0.center/0.23.1440.822@0.23.1440.822" timestamp="1578127694867" />
     <state width="1398" height="244" key="GridCell.Tab.0.center/0.23.1440.823@0.23.1440.823" timestamp="1577882481512" />
     <state width="1398" height="303" key="GridCell.Tab.0.center/0.23.1440.825@0.23.1440.825" timestamp="1576906792138" />
     <state width="1398" height="244" key="GridCell.Tab.0.center/0.23.1440.826@0.23.1440.826" timestamp="1575721692073" />
-    <state width="1398" height="244" key="GridCell.Tab.0.left" timestamp="1577963198408">
+    <state width="1398" height="250" key="GridCell.Tab.0.left" timestamp="1578199727797">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1398" height="244" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1577963198408" />
+    <state width="1398" height="250" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1578199727797" />
+    <state width="1398" height="244" key="GridCell.Tab.0.left/0.23.1440.822@0.23.1440.822" timestamp="1578127694866" />
     <state width="1398" height="244" key="GridCell.Tab.0.left/0.23.1440.823@0.23.1440.823" timestamp="1577882481499" />
     <state width="1398" height="303" key="GridCell.Tab.0.left/0.23.1440.825@0.23.1440.825" timestamp="1576906792137" />
     <state width="1398" height="244" key="GridCell.Tab.0.left/0.23.1440.826@0.23.1440.826" timestamp="1575721692071" />
-    <state width="1398" height="244" key="GridCell.Tab.0.right" timestamp="1577963198411">
+    <state width="1398" height="250" key="GridCell.Tab.0.right" timestamp="1578199727801">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1398" height="244" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1577963198411" />
+    <state width="1398" height="250" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1578199727801" />
+    <state width="1398" height="244" key="GridCell.Tab.0.right/0.23.1440.822@0.23.1440.822" timestamp="1578127694868" />
     <state width="1398" height="244" key="GridCell.Tab.0.right/0.23.1440.823@0.23.1440.823" timestamp="1577882481513" />
     <state width="1398" height="303" key="GridCell.Tab.0.right/0.23.1440.825@0.23.1440.825" timestamp="1576906792139" />
     <state width="1398" height="244" key="GridCell.Tab.0.right/0.23.1440.826@0.23.1440.826" timestamp="1575721692073" />
@@ -193,10 +211,18 @@
     </state>
     <state x="221" y="89" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1577977377393" />
     <state x="221" y="104" key="SettingsEditor/0.23.1440.823@0.23.1440.823" timestamp="1577961754828" />
+    <state x="378" y="207" width="683" height="486" key="find.popup" timestamp="1578199854486">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="378" y="207" width="683" height="486" key="find.popup/0.0.1440.900@0.0.1440.900" timestamp="1578199854486" />
     <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1576160137767">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1576160137767" />
+    <state x="450" y="369" key="vcs.readOnlyHandler.ReadOnlyStatusDialog" timestamp="1578198046183">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="450" y="369" key="vcs.readOnlyHandler.ReadOnlyStatusDialog/0.0.1440.900@0.0.1440.900" timestamp="1578198046183" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

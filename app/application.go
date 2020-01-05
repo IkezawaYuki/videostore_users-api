@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/IkezawaYuki/videostore_users-api/logger"
+	"github.com/IkezawaYuki/videostore_utils-go/logger"
 	"github.com/gin-gonic/gin"
 )
 
